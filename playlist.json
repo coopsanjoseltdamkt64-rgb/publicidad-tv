@@ -1,7 +1,7 @@
-{
-  "playlist": [
-    {"src":"contenido/panapay.mp4"},
-    {"src":"contenido/bioverde.jpg","duration":15},
-    {"src":"contenido/credito-flash.mp4"}
-  ]
-}
+[
+  {
+    "nombre": "Cuenta en Línea",
+    "archivo": "contenido/CUENTA EN LINEA ok.mp4",
+    "tipo": "video"
+  }
+]
