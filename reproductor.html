@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publicidad TV - Cooperativa San José</title><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}#media{width:100vw;height:100vh;object-fit:contain;background:#000}#status{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;background:#000;font-family:Arial;text-align:center}#status.hidden{display:none}</style></head><body><div id="status"><div><h2>Publicidad Cooperativa San José</h2><p>Cargando contenido…</p></div></div><img id="media" style="display:none"><video id="video" playsinline preload="auto" style="display:none;width:100vw;height:100vh;object-fit:contain"></video><script src="configuracion.js"></script><script>
+const C=window.TV_CONFIG||{}, status=document.getElementById('status'), img=document.getElementById('media'), video=document.getElementById('video');let items=[],i=0,timer;
+function statusMsg(a,b){status.classList.remove('hidden');status.innerHTML='<div><h2>'+a+'</h2><p>'+b+'</p></div>';img.style.display='none';video.style.display='none'}
+function hide(){status.classList.add('hidden')}
+function videoFile(s){return /\.(mp4|webm|ogg)(\?.*)?$/i.test(s)}
+function imageFile(s){return /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(s)}
+async function load(){if(Array.isArray(C.playlist)&&C.playlist.length){items=C.playlist;return true}try{let r=await fetch((C.playlistUrl||'playlist.json')+'?v='+Date.now(),{cache:'no-store'});let d=await r.json();items=(Array.isArray(d)?d:d.playlist)||[];return items.length>0}catch(e){return false}}
+function clean(){clearTimeout(timer);video.pause();video.removeAttribute('src');video.load();img.removeAttribute('src')}
+function next(){i=(i+1)%items.length;play()}
+function play(){if(!items.length)return statusMsg('Sin contenido','Agrega imágenes o videos a la lista.');let x=items[i],src=x.src,d=Number(x.duration||C.imageDuration||15)*1000;clean();hide();if(videoFile(src)){video.style.display='block';video.src=src;video.muted=true;video.controls=false;video.onended=next;video.onerror=()=>setTimeout(next,1000);let p=video.play();if(p)p.catch(()=>{})}else if(imageFile(src)){img.style.display='block';img.src=src;img.onerror=()=>setTimeout(next,1000);timer=setTimeout(next,d)}else setTimeout(next,500)}
+async function refresh(){let old=items.length,oldI=i,ok=await load();if(!ok){if(!old)statusMsg('Sin contenido','Configura la lista de reproducción.');return}if(!old){i=0;play()}else if(items.length!==old){i=Math.min(oldI,items.length-1);play()}}
+(async()=>{if(await load()){i=0;play();setInterval(refresh,Math.max(1,Number(C.refreshMinutes||5))*60000)}else statusMsg('Configuración pendiente','Edita configuracion.js o playlist.json.');})();
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')next();if(e.key==='r'||e.key==='R')location.reload();if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.()});
+</script></body></html>

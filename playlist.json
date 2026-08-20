@@ -1,0 +1,7 @@
+{
+  "playlist": [
+    {"src":"contenido/panapay.mp4"},
+    {"src":"contenido/bioverde.jpg","duration":15},
+    {"src":"contenido/credito-flash.mp4"}
+  ]
+}
